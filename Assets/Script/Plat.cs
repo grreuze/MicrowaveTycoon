@@ -12,11 +12,21 @@ public class Plat : MonoBehaviour {
 
     public int timeToCook;
 
-    void Start() {
+    public int valeur;
+    GameObject bol;
+
+    void Start()
+    {
         leTapisRoulant = FindObjectOfType<TapisRoulant>();
         if (!leTapisRoulant) Debug.LogError("IL N'Y A PAS DE TAPIS ROULANT");
         leGameObjectDuTapisRoulant = leTapisRoulant.gameObject;
         rb = GetComponent<Rigidbody2D>();
+        GenererBol();
+    }
+
+    void Update()
+    {
+
     }
     
     void OnCollisionStay2D(Collision2D col) {
@@ -32,4 +42,22 @@ public class Plat : MonoBehaviour {
         rb.velocity = Vector2.zero;
     }
 
+
+    void GenererBol() 
+    {
+        bol = transform.FindChild("Bol").gameObject;
+        GameObject newBolInstance = Instantiate(PrefabManager.instance.apparencesDeBols[valeur], bol.transform.position, bol.transform.rotation) as GameObject;
+        newBolInstance.transform.parent = transform;
+        DestroyImmediate(bol.gameObject);
+        bol = newBolInstance;
+        bol.name = "Bol";
+    }
+
+    /*
+    void OnValidate()
+    {
+        if (PrefabManager.instance == null) PrefabManager.instance = FindObjectOfType<PrefabManager>();
+        GenererBol();
+    }
+    */
 }
