@@ -7,11 +7,12 @@ public class MicroWave : MonoBehaviour {
     float realTimer;
 
     TextMesh timerDisplay;
-    SpriteRenderer cookingLED;
+    SpriteRenderer cookingLED, door;
 
     void Start() {
         timerDisplay = GetComponentInChildren<TextMesh>();
         cookingLED = transform.Find("CookingLED").GetComponent<SpriteRenderer>();
+        door = transform.Find("Door").GetComponent<SpriteRenderer>();
     }
 
     void Update() {
@@ -23,6 +24,11 @@ public class MicroWave : MonoBehaviour {
                 isCooking = false;
                 cookingLED.color = Color.white; // Temporary
             }
+
+            if (isOpen) {
+                // Radiations here
+            }
+
         } else if (Time.time > lastTimeScrolled + 1 && timer > 0) {
             isCooking = true;
             cookingLED.color = Color.cyan; // Temporary
