@@ -6,12 +6,13 @@ public class MicroWaveDoorButton : MonoBehaviour {
     
 	void Start () {
         microWave = GetComponentInParent<MicroWave>();
-	}
+        microWave.door.gameObject.SetActive(microWave.isOpen);
+    }
 
     void OnMouseOver() {
         if (Input.GetMouseButtonDown(0)) {
-            print("click button");
             microWave.isOpen ^= true;
+            microWave.door.gameObject.SetActive(microWave.isOpen); // Temporary
         }
     }
 }

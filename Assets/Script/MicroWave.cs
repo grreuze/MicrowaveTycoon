@@ -4,12 +4,14 @@ public class MicroWave : MonoBehaviour {
 
     public bool isOpen, isCooking;
     public int timer;
+    public SpriteRenderer door;
+
     float realTimer;
-
     TextMesh timerDisplay;
-    SpriteRenderer cookingLED, door;
+    SpriteRenderer cookingLED;
+    Plat cookingMeal;
 
-    void Start() {
+    void Awake() {
         timerDisplay = GetComponentInChildren<TextMesh>();
         cookingLED = transform.Find("CookingLED").GetComponent<SpriteRenderer>();
         door = transform.Find("Door").GetComponent<SpriteRenderer>();
@@ -18,9 +20,11 @@ public class MicroWave : MonoBehaviour {
     void Update() {
         if (isCooking) {
             realTimer -= Time.deltaTime;
-            timer = (int)realTimer;
+            timer = (int)Mathf.Round(realTimer);
             SetTimerDisplay();
             if (timer <= 0) {
+                realTimer = 0;
+                timer = 0;
                 isCooking = false;
                 cookingLED.color = Color.white; // Temporary
             }
@@ -41,6 +45,7 @@ public class MicroWave : MonoBehaviour {
 
         if (mouseWheel != 0) {
             timer += mouseWheel * 5;
+            timer = Mathf.Max(0, timer);
             realTimer = timer;
             lastTimeScrolled = Time.time;
             SetTimerDisplay();
@@ -48,8 +53,10 @@ public class MicroWave : MonoBehaviour {
     }
 
     void OnTriggerEnter2D(Collider2D col) {
-        if (isOpen) {
-            print("Put the meal in the Microwave");
+        Plat plat = col.GetComponent<Plat>();
+        if (plat && isOpen) {
+            cookingMeal = plat;
+            plat.microWaveThatContainsMe = this;
         }
     }
     
