@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(Collider2D))]
 public class DraggableObject : MonoBehaviour {
     
     /// <summary>
     /// Returns whether or not the object is currently held by the player.
     /// </summary>
-            
     public bool isHeld;
     
 	void Update () {
@@ -14,7 +13,8 @@ public class DraggableObject : MonoBehaviour {
 	}
 
     void MoveToMousePosition() {
-        transform.position = Input.mousePosition;
+        float screenDepth = Camera.main.WorldToScreenPoint(transform.position).z;
+        transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenDepth));
     }
 
     void OnMouseOver() {
@@ -22,7 +22,6 @@ public class DraggableObject : MonoBehaviour {
     }
 
     void OnMouseExit() {
-        isHeld = !Input.GetMouseButton(0);
+        if (!Input.GetMouseButton(0)) isHeld = false;
     }
-
 }
