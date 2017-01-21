@@ -50,7 +50,7 @@ public class MicroWave : MonoBehaviour {
         } else if (!isOpen) {
             // let's reduce radiations a bit
             if (gameManager.radiations > 0) gameManager.radiations -= Time.deltaTime * 1/6;
-        }
+        } else radiations.Stop();
     }
     
     float lastTimeScrolled;

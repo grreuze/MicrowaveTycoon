@@ -29,7 +29,7 @@ public class Plat : MonoBehaviour {
     BoxCollider2D myCollider;
     SpriteRenderer bouffe;
     GameObject smoke;
-    ParticleSystem smokeClouds;
+    ParticleSystem smokeClouds, shine;
 
     float speed;
     Vector2 movement;
@@ -45,6 +45,7 @@ public class Plat : MonoBehaviour {
         smoke.SetActive(false);
 
         smokeClouds = transform.Find("SmokeClouds").GetComponent<ParticleSystem>();
+        shine = transform.Find("Shine").GetComponent<ParticleSystem>();
 
         myCollider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
@@ -59,6 +60,7 @@ public class Plat : MonoBehaviour {
         inStarGate = false;
         smoke.gameObject.SetActive(false);
         smokeClouds.Stop();
+        shine.Stop();
         transform.rotation = Quaternion.identity;
         transform.localScale = Vector2.one;
         myCollider.isTrigger = false;
@@ -68,38 +70,12 @@ public class Plat : MonoBehaviour {
 
     void Update() {
         if (isHeld) Drag();
-        if (microWaveThatContainsMe && microWaveThatContainsMe.timer > 0) {
 
-            // Add cooking time
-            realTimer += Time.deltaTime * gameManager.timeModifier;
-            timeCooked = (int)Mathf.Round(realTimer);
+        DoSmoke();
+        DoCooking();
 
-            if (timeCooked > timeToCook) { // Overcooked
-
-                if (cookingState != CookingState.overCooked) {
-                    cookingState = CookingState.overCooked;
-                    bouffe.sharedMaterial = gameManager.matTropCuit;
-                    smoke.SetActive(false);
-                    if (!smokeClouds.isPlaying) smokeClouds.Play();
-                }
-
-            } else if (timeCooked > timeToCook - cookingMargin) { // Cooked
-
-                bouffe.sharedMaterial = gameManager.matCuit;
-                cookingState = CookingState.good;
-                smoke.SetActive(true);
-
-                if (timeCooked == timeToCook) {
-                    // Perfect score
-                    cookingState = CookingState.perfect;
-                    smoke.SetActive(true);
-                    // Ajouter petites étoiles cools
-                }
-            }
-        }
-        if (!Input.GetMouseButton(0)) {
+        if (!Input.GetMouseButton(0))
             Drop();
-        }
     }
     
     void OnMouseOver() {
@@ -123,6 +99,51 @@ public class Plat : MonoBehaviour {
     void OnCollisionExit2D(Collision2D col) {
         if (rb.bodyType == RigidbodyType2D.Dynamic)
             rb.velocity = Vector2.zero;
+    }
+
+    void DoCooking() {
+        if (microWaveThatContainsMe && microWaveThatContainsMe.timer > 0) {
+
+            // Add cooking time
+            realTimer += Time.deltaTime * gameManager.timeModifier;
+            timeCooked = (int)Mathf.Round(realTimer);
+
+            if (timeCooked > timeToCook) { // Overcooked
+
+                if (cookingState != CookingState.overCooked) {
+                    cookingState = CookingState.overCooked;
+                    bouffe.sharedMaterial = gameManager.matTropCuit;
+                    smoke.SetActive(false);
+                }
+
+            } else if (timeCooked > timeToCook - cookingMargin) { // Cooked
+
+                bouffe.sharedMaterial = gameManager.matCuit;
+                cookingState = CookingState.good;
+                if (microWaveThatContainsMe.isOpen) smoke.SetActive(true);
+
+                if (timeCooked == timeToCook) {
+                    // Perfect score
+                    cookingState = CookingState.perfect;
+                    if (microWaveThatContainsMe.isOpen) smoke.SetActive(true);
+                    // Ajouter petites étoiles cools
+                }
+            }
+        }
+    }
+
+    void DoSmoke() {
+        if (cookingState == CookingState.overCooked &&
+            (!microWaveThatContainsMe || microWaveThatContainsMe && microWaveThatContainsMe.isOpen)) {
+
+            if (!smokeClouds.isPlaying) smokeClouds.Play();
+        } else if (smokeClouds.isPlaying) smokeClouds.Stop();
+
+        if ((cookingState == CookingState.perfect || cookingState == CookingState.good) &&
+            (!microWaveThatContainsMe || microWaveThatContainsMe && microWaveThatContainsMe.isOpen)) {
+
+            smoke.SetActive(true);
+        } else smoke.SetActive(false);
     }
 
     public void GenererBol() {
