@@ -142,8 +142,12 @@ public class Plat : MonoBehaviour {
         if ((cookingState == CookingState.perfect || cookingState == CookingState.good) &&
             (!microWaveThatContainsMe || microWaveThatContainsMe && microWaveThatContainsMe.isOpen)) {
 
+            if (cookingState == CookingState.perfect && !shine.isPlaying)
+                shine.Play();
             smoke.SetActive(true);
         } else smoke.SetActive(false);
+
+        if (cookingState != CookingState.perfect || microWaveThatContainsMe) shine.Stop();
     }
 
     public void GenererBol() {
