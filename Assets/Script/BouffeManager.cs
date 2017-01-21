@@ -29,15 +29,13 @@ public class BouffeManager : MonoBehaviour {
         instantiatePosition = transform.position;
         lastTimeInstantiated = -interval; // To Spawn the first at 0 seconds
     }
-
-
+    
 	void Update () {
 		
         if (Time.time >= lastTimeInstantiated + interval) {
 
             listeDePlats liste = listesDePlatsSelonLeNiveauDeDifficulté[difficultyLevel];
             SpawnBouffe(liste.plats[Random.Range(0, liste.plats.Length)]);
-
             lastTimeInstantiated = Time.time;
         }
 

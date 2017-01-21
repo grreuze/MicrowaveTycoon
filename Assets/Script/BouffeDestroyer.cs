@@ -14,7 +14,7 @@ public class BouffeDestroyer : MonoBehaviour {
     public virtual void OnTriggerEnter2D(Collider2D col) {
         Plat plat = col.GetComponent<Plat>();
         if (plat) {
-            plat.Drop();
+            plat.ResetValues();
             plat.gameObject.SetActive(false);
             plat.transform.position = bouffeManager.instantiatePosition;
             plat.transform.parent = pool;

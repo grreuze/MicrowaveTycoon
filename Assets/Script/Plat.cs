@@ -22,7 +22,7 @@ public class Plat : MonoBehaviour {
     GameObject bol;
     TapisRoulant leTapisRoulant;
     GameObject leGameObjectDuTapisRoulant;
-
+    BoxCollider2D myCollider;
     SpriteRenderer bouffe;
 
     float speed;
@@ -35,9 +35,19 @@ public class Plat : MonoBehaviour {
         if (!leTapisRoulant) Debug.LogError("IL N'Y A PAS DE TAPIS ROULANT");
         leGameObjectDuTapisRoulant = leTapisRoulant.gameObject;
 
+        myCollider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         bouffe = transform.Find("Bouffe").GetComponent<SpriteRenderer>();
         GenererBol();
+    }
+
+    public void ResetValues() {
+        Drop();
+        realTimer = 0;
+        timeCooked = 0;
+        myCollider.isTrigger = false;
+        overCooked = false;
+        bouffe.sharedMaterial = gameManager.matDefault;
     }
 
     void Update() {
@@ -67,8 +77,6 @@ public class Plat : MonoBehaviour {
                 }
 
             }
-
-
         }
         if (!Input.GetMouseButton(0)) {
             Drop();
@@ -110,6 +118,7 @@ public class Plat : MonoBehaviour {
     #region Drag n Drop Functions
 
     void StartHolding() {
+        myCollider.isTrigger = false;
         transform.parent = null;
         rb.bodyType = RigidbodyType2D.Dynamic;
         if (microWaveThatContainsMe) {
@@ -124,10 +133,11 @@ public class Plat : MonoBehaviour {
         transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenDepth));
     }
 
-    public void Drop() {
+    void Drop() {
         isHeld = false;
         currentlyHolding = null;
         if (microWaveThatContainsMe) {
+            myCollider.isTrigger = true;
             transform.parent = microWaveThatContainsMe.door.transform;
             rb.bodyType = RigidbodyType2D.Static;
             transform.localPosition = Vector2.zero;
