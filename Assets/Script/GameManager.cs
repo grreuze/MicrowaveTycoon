@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
@@ -7,8 +8,9 @@ public class GameManager : MonoBehaviour {
     [Header("Stuff")]
     public GameObject[] apparencesDeBols = new GameObject[5];
     public Material matDefault, matCuit, matTropCuit;
+    public Slider satisfactionSlider;
 
-    [Header("Variables")]
+[Header("Variables")]
     public float timeModifier = 1;
     public float satisfaction = 50;
     public float radiations;
@@ -21,5 +23,7 @@ public class GameManager : MonoBehaviour {
 
     void Update() {
         satisfaction -= Time.deltaTime;
+        satisfactionSlider.value = satisfaction;
     }
+
 }
