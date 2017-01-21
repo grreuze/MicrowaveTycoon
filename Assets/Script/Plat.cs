@@ -14,6 +14,9 @@ public class Plat : MonoBehaviour {
     public MicroWave microWaveThatContainsMe;
 
     public bool overCooked;
+    
+    public int valeur;
+    GameObject bol;
 
     TapisRoulant leTapisRoulant;
     GameObject leGameObjectDuTapisRoulant;
@@ -26,6 +29,7 @@ public class Plat : MonoBehaviour {
         if (!leTapisRoulant) Debug.LogError("IL N'Y A PAS DE TAPIS ROULANT");
         leGameObjectDuTapisRoulant = leTapisRoulant.gameObject;
         rb = GetComponent<Rigidbody2D>();
+        GenererBol();
     }
 
     void Update() {
@@ -67,6 +71,21 @@ public class Plat : MonoBehaviour {
     void OnCollisionExit2D(Collision2D col) {
         rb.velocity = Vector2.zero;
     }
+
+    void GenererBol() {
+        bol = transform.FindChild("Bol").gameObject;
+        GameObject newBolInstance = Instantiate(PrefabManager.instance.apparencesDeBols[valeur], bol.transform.position, bol.transform.rotation) as GameObject;
+        newBolInstance.transform.parent = transform;
+        Destroy(bol.gameObject);
+        bol = newBolInstance;
+        bol.name = "Bol";
+    }
+    
+    /*
+    void OnValidate() {
+        if (PrefabManager.instance == null) PrefabManager.instance = FindObjectOfType<PrefabManager>();
+        GenererBol();
+    }*/
 
     #region Drag n Drop Functions
 
