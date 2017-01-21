@@ -16,7 +16,8 @@ public class Plat : MonoBehaviour {
     public bool overCooked;
     public int valeurDuBol;
     public static Plat currentlyHolding;
-
+    public bool inStarGate;
+    
     GameManager gameManager;
     GameObject bol;
     TapisRoulant leTapisRoulant;
@@ -123,7 +124,7 @@ public class Plat : MonoBehaviour {
         transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenDepth));
     }
 
-    void Drop() {
+    public void Drop() {
         isHeld = false;
         currentlyHolding = null;
         if (microWaveThatContainsMe) {

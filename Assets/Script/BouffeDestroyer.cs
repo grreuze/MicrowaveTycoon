@@ -11,16 +11,20 @@ public class BouffeDestroyer : MonoBehaviour {
         pool = bouffeManager.pool.transform;
 	}
 
-    void OnTriggerEnter2D(Collider2D col) {
+    public virtual void OnTriggerEnter2D(Collider2D col) {
         Plat plat = col.GetComponent<Plat>();
         if (plat) {
+            plat.Drop();
             plat.gameObject.SetActive(false);
+            plat.transform.position = bouffeManager.instantiatePosition;
             plat.transform.parent = pool;
         }
     }
 
     void OnDrawGizmos() {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position, GetComponent<BoxCollider2D>().size);
+        BoxCollider2D box = GetComponent<BoxCollider2D>();
+        Vector2 size = new Vector2(box.size.x * transform.lossyScale.x, box.size.y * transform.lossyScale.y);
+        Gizmos.DrawWireCube(transform.position, size);
     }
 }

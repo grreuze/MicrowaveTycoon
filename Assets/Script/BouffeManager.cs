@@ -8,7 +8,7 @@ public class BouffeManager : MonoBehaviour {
     /// </summary>
     public float interval = 2;
     public int difficultyLevel;
-    Vector2 instantiatePosition;
+    public Vector2 instantiatePosition;
     
     [Header("LES PLATS")]
     public listeDePlats[] listesDePlatsSelonLeNiveauDeDifficulté;
@@ -20,14 +20,16 @@ public class BouffeManager : MonoBehaviour {
 
     [HideInInspector]
     public GameObject pool;
-    
-	void Awake() {
+
+    float lastTimeInstantiated;
+
+    void Awake() {
 		pool = new GameObject();
         pool.name = "Pool";
         instantiatePosition = transform.position;
+        lastTimeInstantiated = -interval; // To Spawn the first at 0 seconds
     }
 
-    float lastTimeInstantiated;
 
 	void Update () {
 		
