@@ -6,7 +6,7 @@ public class MicroWave : MonoBehaviour {
     public int timer;
     public float radiationPower = 1;
 
-    public SpriteRenderer door;
+    public SpriteRenderer openDoor, closedDoor;
     public Plat cookingMeal;
 
     float realTimer;
@@ -18,7 +18,9 @@ public class MicroWave : MonoBehaviour {
     void Awake() {
         timerDisplay = GetComponentInChildren<TextMesh>();
         cookingLED = transform.Find("CookingLED").GetComponent<SpriteRenderer>();
-        door = transform.Find("Door").GetComponent<SpriteRenderer>();
+        openDoor = transform.Find("Door").GetComponent<SpriteRenderer>();
+        closedDoor = transform.Find("ClosedDoor").GetComponent<SpriteRenderer>();
+
         gameManager = GameManager.instance;
         radiations = transform.Find("Radiations").GetComponent<ParticleSystem>();
     }

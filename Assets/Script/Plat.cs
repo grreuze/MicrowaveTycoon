@@ -71,7 +71,7 @@ public class Plat : MonoBehaviour {
     void Update() {
         if (isHeld) Drag();
 
-        DoSmoke();
+        DoFX();
         DoCooking();
 
         if (!Input.GetMouseButton(0))
@@ -121,33 +121,26 @@ public class Plat : MonoBehaviour {
                 bouffe.sharedMaterial = gameManager.matCuit;
                 cookingState = CookingState.good;
                 if (microWaveThatContainsMe.isOpen) smoke.SetActive(true);
-
-                if (timeCooked == timeToCook) {
-                    // Perfect score
-                    cookingState = CookingState.perfect;
-                    if (microWaveThatContainsMe.isOpen) smoke.SetActive(true);
-                    // Ajouter petites étoiles cools
-                }
             }
         }
     }
 
-    void DoSmoke() {
+    void DoFX() {
         if (cookingState == CookingState.overCooked &&
             (!microWaveThatContainsMe || microWaveThatContainsMe && microWaveThatContainsMe.isOpen)) {
 
             if (!smokeClouds.isPlaying) smokeClouds.Play();
         } else if (smokeClouds.isPlaying) smokeClouds.Stop();
 
-        if ((cookingState == CookingState.perfect || cookingState == CookingState.good) &&
+        if (cookingState == CookingState.good &&
             (!microWaveThatContainsMe || microWaveThatContainsMe && microWaveThatContainsMe.isOpen)) {
 
-            if (cookingState == CookingState.perfect && !shine.isPlaying)
-                shine.Play();
+            if (!shine.isPlaying) shine.Play();
             smoke.SetActive(true);
-        } else smoke.SetActive(false);
-
-        if (cookingState != CookingState.perfect || microWaveThatContainsMe) shine.Stop();
+        } else {
+            if (shine.isPlaying) shine.Stop();
+            smoke.SetActive(false);
+        }
     }
 
     public void GenererBol() {
@@ -186,7 +179,7 @@ public class Plat : MonoBehaviour {
 
             transform.parent = null;
             transform.localScale = Vector2.one * 0.7f;
-            transform.parent = microWaveThatContainsMe.door.transform;
+            transform.parent = microWaveThatContainsMe.closedDoor.transform;
             transform.rotation = Quaternion.identity;
 
             rb.bodyType = RigidbodyType2D.Static;
