@@ -105,7 +105,9 @@ public class MicroWave : MonoBehaviour {
 
         Plat plat = col.GetComponent<Plat>();
         if (plat && !plat.isHeld && plat.microWaveThatContainsMe == this && isOpen && !cookingMeal) {
-            cookingMeal = plat;
+
+            if (plat.hasMetallicObject) Explosion();
+            else cookingMeal = plat;
         }
     }
 
