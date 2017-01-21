@@ -3,7 +3,7 @@
 public class CompteurGeiger : MonoBehaviour {
 
     public float minAngle = 60, maxAngle = -60;
-    public float minRadiation = 0, maxRadiation = 10;
+    public float minRadiation = 0, maxRadiation = 50;
 
     GameManager gameManager;
     Transform transformCache;
@@ -14,6 +14,7 @@ public class CompteurGeiger : MonoBehaviour {
 	}
 	
 	void Update () {
+        gameManager.radiations = Mathf.Clamp(gameManager.radiations, minRadiation, maxRadiation);
         float rad = gameManager.radiations / maxRadiation;
         float rot = Mathf.Lerp(minAngle, maxAngle, rad);
         transformCache.localRotation = Quaternion.Euler(0, 0, rot);
