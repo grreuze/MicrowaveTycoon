@@ -5,11 +5,11 @@ public class MicroWave : MonoBehaviour {
     public bool isOpen, isCooking;
     public int timer;
     public SpriteRenderer door;
+    public Plat cookingMeal;
 
     float realTimer;
     TextMesh timerDisplay;
     SpriteRenderer cookingLED;
-    Plat cookingMeal;
 
     void Awake() {
         timerDisplay = GetComponentInChildren<TextMesh>();
@@ -19,7 +19,7 @@ public class MicroWave : MonoBehaviour {
 
     void Update() {
         if (isCooking) {
-            realTimer -= Time.deltaTime;
+            realTimer -= Time.deltaTime * Parameters.timeModifier;
             timer = (int)Mathf.Round(realTimer);
             SetTimerDisplay();
             if (timer <= 0) {
@@ -54,7 +54,7 @@ public class MicroWave : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D col) {
         Plat plat = col.GetComponent<Plat>();
-        if (plat && isOpen) {
+        if (plat && isOpen && !cookingMeal) {
             cookingMeal = plat;
             plat.microWaveThatContainsMe = this;
         }
