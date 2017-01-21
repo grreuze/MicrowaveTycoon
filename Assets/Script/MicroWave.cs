@@ -11,7 +11,7 @@ public class MicroWave : MonoBehaviour {
 
     float realTimer;
     TextMesh timerDisplay;
-    SpriteRenderer cookingLED;
+    SpriteRenderer cookingLED, mask;
     GameManager gameManager;
     ParticleSystem radiations;
 
@@ -20,6 +20,7 @@ public class MicroWave : MonoBehaviour {
         cookingLED = transform.Find("CookingLED").GetComponent<SpriteRenderer>();
         openDoor = transform.Find("Door").GetComponent<SpriteRenderer>();
         closedDoor = transform.Find("ClosedDoor").GetComponent<SpriteRenderer>();
+        mask = closedDoor.transform.GetChild(0).GetComponent<SpriteRenderer>();
 
         gameManager = GameManager.instance;
         radiations = transform.Find("Radiations").GetComponent<ParticleSystem>();
@@ -34,6 +35,8 @@ public class MicroWave : MonoBehaviour {
                 realTimer = 0;
                 timer = 0;
                 isCooking = false;
+                mask.sprite = gameManager.maskDoorOff;
+
                 cookingLED.color = Color.white; // Temporary
             }
 
@@ -44,6 +47,7 @@ public class MicroWave : MonoBehaviour {
 
         } else if (Time.time > lastTimeScrolled + 1 && timer > 0) {
             isCooking = true;
+            mask.sprite = gameManager.maskDoorOn;
 
             if (isOpen) radiations.Play();
 

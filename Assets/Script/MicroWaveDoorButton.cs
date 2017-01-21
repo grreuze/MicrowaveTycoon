@@ -23,14 +23,10 @@ public class MicroWaveDoorButton : MonoBehaviour {
             microWave.openDoor.enabled = microWave.isOpen;
             mask.enabled = microWave.closedDoor.enabled = !microWave.isOpen;
 
+            mask.sprite = microWave.isCooking ? GameManager.instance.maskDoorOn : GameManager.instance.maskDoorOff;
+
             if (microWave.isOpen && microWave.isCooking) radiations.Play();
             else radiations.Stop();
-            
-            /*SpriteRenderer[] rends = microWave.door.GetComponentsInChildren<SpriteRenderer>();
-            foreach (SpriteRenderer rend in rends) {
-                rend.enabled = microWave.isOpen;
-            }*/
-            
         }
     }
 }

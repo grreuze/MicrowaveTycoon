@@ -34,6 +34,12 @@ public class Plat : MonoBehaviour {
     float speed;
     Vector2 movement;
     
+    bool isAccessible {
+        get {
+            return !microWaveThatContainsMe || microWaveThatContainsMe && microWaveThatContainsMe.isOpen;
+        }
+    }
+
     void Start() {
         gameManager = GameManager.instance;
 
@@ -79,12 +85,14 @@ public class Plat : MonoBehaviour {
     }
     
     void OnMouseOver() {
+        if (!isAccessible) return;
         bool canDrag = !isHeld;
         if (!currentlyHolding) {
             isHeld = Input.GetMouseButton(0);
             if (!isHeld) currentlyHolding = null;
         }
-        if (isHeld && canDrag && !currentlyHolding) StartHolding();
+        if (isHeld && canDrag && !currentlyHolding)
+            StartHolding();
     }
     
     void OnCollisionStay2D(Collision2D col) {
@@ -126,14 +134,12 @@ public class Plat : MonoBehaviour {
     }
 
     void DoFX() {
-        if (cookingState == CookingState.overCooked &&
-            (!microWaveThatContainsMe || microWaveThatContainsMe && microWaveThatContainsMe.isOpen)) {
+        if (cookingState == CookingState.overCooked && isAccessible) {
 
             if (!smokeClouds.isPlaying) smokeClouds.Play();
         } else if (smokeClouds.isPlaying) smokeClouds.Stop();
 
-        if (cookingState == CookingState.good &&
-            (!microWaveThatContainsMe || microWaveThatContainsMe && microWaveThatContainsMe.isOpen)) {
+        if (cookingState == CookingState.good && isAccessible) {
 
             if (!shine.isPlaying) shine.Play();
             smoke.SetActive(true);

@@ -5,12 +5,13 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager instance;
 
-    [Header("Stuff")]
+    [Header("STUFF")]
     public GameObject[] apparencesDeBols = new GameObject[5];
     public Material matDefault, matCuit, matTropCuit;
     public Slider satisfactionSlider;
+    public Sprite maskDoorOn, maskDoorOff;
 
-[Header("Variables")]
+    [Header("VARIABLES")]
     public float timeModifier = 1;
     public float satisfaction = 50;
     public float radiations;
