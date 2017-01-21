@@ -6,7 +6,7 @@ public class BouffeDestroyer : MonoBehaviour {
     BouffeManager bouffeManager;
     Transform pool;
 
-	void Start () {
+    public virtual void Start () {
         bouffeManager = FindObjectOfType<BouffeManager>();
         pool = bouffeManager.pool.transform;
 	}

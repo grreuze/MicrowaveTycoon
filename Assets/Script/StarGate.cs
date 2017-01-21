@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class StarGate : BouffeDestroyer {
 
+    GameManager gameManager;
+
+    public override void Start() {
+        base.Start();
+        gameManager = GameManager.instance;
+    }
+
     public override void OnTriggerEnter2D(Collider2D col) {
 
         Plat plat = col.GetComponent<Plat>();
@@ -16,6 +23,15 @@ public class StarGate : BouffeDestroyer {
         if (plat && !plat.isHeld && plat.inStarGate) {
 
             //Ajouter des points de satisfaction au gars, etc
+            float valeur = plat.valeurDuBol + 1;
+
+            if (plat.cookingState == Plat.CookingState.good) {
+                gameManager.satisfaction += gameManager.goodScore * valeur;
+            } else if (plat.cookingState == Plat.CookingState.perfect) {
+                gameManager.satisfaction += gameManager.perfectScore * valeur;
+            } else {
+                gameManager.satisfaction += gameManager.badScore * valeur;
+            }
 
             DestroyBouffe(col);
 

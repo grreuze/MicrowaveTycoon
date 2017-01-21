@@ -12,12 +12,16 @@ public class Plat : MonoBehaviour {
     float realTimer;
     public int timeToCook, timeCooked, cookingMargin;
     public MicroWave microWaveThatContainsMe;
-
-    public bool overCooked;
+    
     public int valeurDuBol;
     public static Plat currentlyHolding;
     public bool inStarGate;
-    
+
+    public CookingState cookingState;
+    public enum CookingState {
+        none, good, perfect, overCooked
+    }
+
     GameManager gameManager;
     GameObject bol;
     TapisRoulant leTapisRoulant;
@@ -46,7 +50,7 @@ public class Plat : MonoBehaviour {
         realTimer = 0;
         timeCooked = 0;
         myCollider.isTrigger = false;
-        overCooked = false;
+        cookingState = CookingState.none;
         bouffe.sharedMaterial = gameManager.matDefault;
     }
 
@@ -60,7 +64,7 @@ public class Plat : MonoBehaviour {
 
             if (timeCooked > timeToCook) {
                 // Overcooked
-                overCooked = true;
+                cookingState = CookingState.overCooked;
                 bouffe.sharedMaterial = gameManager.matTropCuit;
                 // Ajouter beaucoup de fuméee
 
@@ -72,7 +76,7 @@ public class Plat : MonoBehaviour {
 
                 if (timeCooked == timeToCook) {
                     // Perfect score
-
+                    cookingState = CookingState.perfect;
                     // Ajouter petites étoiles cools
                 }
 
