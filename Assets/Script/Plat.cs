@@ -28,6 +28,8 @@ public class Plat : MonoBehaviour {
     GameObject leGameObjectDuTapisRoulant;
     BoxCollider2D myCollider;
     SpriteRenderer bouffe;
+    GameObject smoke;
+    ParticleSystem smokeClouds;
 
     float speed;
     Vector2 movement;
@@ -39,6 +41,11 @@ public class Plat : MonoBehaviour {
         if (!leTapisRoulant) Debug.LogError("IL N'Y A PAS DE TAPIS ROULANT");
         leGameObjectDuTapisRoulant = leTapisRoulant.gameObject;
 
+        smoke = transform.Find("Smoke").gameObject;
+        smoke.SetActive(false);
+
+        smokeClouds = transform.Find("SmokeClouds").GetComponent<ParticleSystem>();
+
         myCollider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         bouffe = transform.Find("Bouffe").GetComponent<SpriteRenderer>();
@@ -49,6 +56,11 @@ public class Plat : MonoBehaviour {
         Drop();
         realTimer = 0;
         timeCooked = 0;
+        inStarGate = false;
+        smoke.gameObject.SetActive(false);
+        smokeClouds.Stop();
+        transform.rotation = Quaternion.identity;
+        transform.localScale = Vector2.one;
         myCollider.isTrigger = false;
         cookingState = CookingState.none;
         bouffe.sharedMaterial = gameManager.matDefault;
@@ -62,24 +74,27 @@ public class Plat : MonoBehaviour {
             realTimer += Time.deltaTime * gameManager.timeModifier;
             timeCooked = (int)Mathf.Round(realTimer);
 
-            if (timeCooked > timeToCook) {
-                // Overcooked
-                cookingState = CookingState.overCooked;
-                bouffe.sharedMaterial = gameManager.matTropCuit;
-                // Ajouter beaucoup de fuméee
+            if (timeCooked > timeToCook) { // Overcooked
 
-            } else if (timeCooked > timeToCook - cookingMargin) {
-                // Cooked
+                if (cookingState != CookingState.overCooked) {
+                    cookingState = CookingState.overCooked;
+                    bouffe.sharedMaterial = gameManager.matTropCuit;
+                    smoke.SetActive(false);
+                    if (!smokeClouds.isPlaying) smokeClouds.Play();
+                }
+
+            } else if (timeCooked > timeToCook - cookingMargin) { // Cooked
 
                 bouffe.sharedMaterial = gameManager.matCuit;
-                // Ajouter particles de fumée stylée
+                cookingState = CookingState.good;
+                smoke.SetActive(true);
 
                 if (timeCooked == timeToCook) {
                     // Perfect score
                     cookingState = CookingState.perfect;
+                    smoke.SetActive(true);
                     // Ajouter petites étoiles cools
                 }
-
             }
         }
         if (!Input.GetMouseButton(0)) {
@@ -125,6 +140,7 @@ public class Plat : MonoBehaviour {
         myCollider.isTrigger = false;
         transform.parent = null;
         rb.bodyType = RigidbodyType2D.Dynamic;
+        transform.localScale = Vector2.one;
         if (microWaveThatContainsMe) {
             microWaveThatContainsMe.cookingMeal = null;
             microWaveThatContainsMe = null;
@@ -142,7 +158,12 @@ public class Plat : MonoBehaviour {
         currentlyHolding = null;
         if (microWaveThatContainsMe) {
             myCollider.isTrigger = true;
+
+            transform.parent = null;
+            transform.localScale = Vector2.one * 0.7f;
             transform.parent = microWaveThatContainsMe.door.transform;
+            transform.rotation = Quaternion.identity;
+
             rb.bodyType = RigidbodyType2D.Static;
             transform.localPosition = Vector2.zero;
         }

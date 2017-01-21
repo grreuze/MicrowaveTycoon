@@ -1,13 +1,14 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
 public class StarGate : BouffeDestroyer {
 
     GameManager gameManager;
+    ParticleSystem zapPS;
 
     public override void Start() {
         base.Start();
         gameManager = GameManager.instance;
+        zapPS = transform.Find("ZapParticleSystem").GetComponent<ParticleSystem>();
     }
 
     public override void OnTriggerEnter2D(Collider2D col) {
@@ -32,7 +33,7 @@ public class StarGate : BouffeDestroyer {
             } else {
                 gameManager.satisfaction += gameManager.badScore * valeur;
             }
-
+            zapPS.Play();
             DestroyBouffe(col);
 
             // Mettre des effets de particules de téléportation cool
