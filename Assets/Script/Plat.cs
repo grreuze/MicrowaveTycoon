@@ -10,28 +10,32 @@ public class Plat : MonoBehaviour {
     public Rigidbody2D rb;
 
     float realTimer;
-    public int timeToCook, timeCooked;
+    public int timeToCook, timeCooked, cookingMargin;
     public MicroWave microWaveThatContainsMe;
 
     public bool overCooked;
-    
-    public int valeur;
-
+    public int valeurDuBol;
     public static Plat currentlyHolding;
 
+    GameManager gameManager;
     GameObject bol;
-
     TapisRoulant leTapisRoulant;
     GameObject leGameObjectDuTapisRoulant;
 
+    SpriteRenderer bouffe;
+
     float speed;
     Vector2 movement;
-
+    
     void Start() {
+        gameManager = GameManager.instance;
+
         leTapisRoulant = FindObjectOfType<TapisRoulant>();
         if (!leTapisRoulant) Debug.LogError("IL N'Y A PAS DE TAPIS ROULANT");
         leGameObjectDuTapisRoulant = leTapisRoulant.gameObject;
+
         rb = GetComponent<Rigidbody2D>();
+        bouffe = transform.Find("Bouffe").GetComponent<SpriteRenderer>();
         GenererBol();
     }
 
@@ -40,12 +44,30 @@ public class Plat : MonoBehaviour {
         if (microWaveThatContainsMe && microWaveThatContainsMe.timer > 0) {
 
             // Add cooking time
-            realTimer += Time.deltaTime * Parameters.timeModifier;
+            realTimer += Time.deltaTime * gameManager.timeModifier;
             timeCooked = (int)Mathf.Round(realTimer);
 
             if (timeCooked > timeToCook) {
+                // Overcooked
                 overCooked = true;
+                bouffe.sharedMaterial = gameManager.matTropCuit;
+                // Ajouter beaucoup de fuméee
+
+            } else if (timeCooked > timeToCook - cookingMargin) {
+                // Cooked
+
+                bouffe.sharedMaterial = gameManager.matCuit;
+                // Ajouter particles de fumée stylée
+
+                if (timeCooked == timeToCook) {
+                    // Perfect score
+
+                    // Ajouter petites étoiles cools
+                }
+
             }
+
+
         }
         if (!Input.GetMouseButton(0)) {
             Drop();
@@ -77,7 +99,7 @@ public class Plat : MonoBehaviour {
 
     public void GenererBol() {
         bol = transform.FindChild("Bol").gameObject;
-        GameObject newBolInstance = Instantiate(PrefabManager.instance.apparencesDeBols[valeur], bol.transform.position, bol.transform.rotation) as GameObject;
+        GameObject newBolInstance = Instantiate(gameManager.apparencesDeBols[valeurDuBol], bol.transform.position, bol.transform.rotation) as GameObject;
         newBolInstance.transform.parent = transform;
         DestroyImmediate(bol.gameObject);
         bol = newBolInstance;
@@ -89,7 +111,10 @@ public class Plat : MonoBehaviour {
     void StartHolding() {
         transform.parent = null;
         rb.bodyType = RigidbodyType2D.Dynamic;
-        microWaveThatContainsMe = null;
+        if (microWaveThatContainsMe) {
+            microWaveThatContainsMe.cookingMeal = null;
+            microWaveThatContainsMe = null;
+        }
         currentlyHolding = this;
     }
 
@@ -105,19 +130,6 @@ public class Plat : MonoBehaviour {
             transform.parent = microWaveThatContainsMe.door.transform;
             rb.bodyType = RigidbodyType2D.Static;
             transform.localPosition = Vector2.zero;
-            microWaveThatContainsMe.cookingMeal = null;
-
-            if (!overCooked) {
-                if (timeCooked == timeToCook) {
-                    // Perfect score
-                } else if (timeCooked > timeToCook - 5) {
-                    // Approximately cooked
-                } else {
-                    // Not cooked
-                }
-            }
-
-            // Here check if cooked or not
         }
     }
 

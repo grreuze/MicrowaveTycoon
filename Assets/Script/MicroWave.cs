@@ -19,7 +19,7 @@ public class MicroWave : MonoBehaviour {
 
     void Update() {
         if (isCooking) {
-            realTimer -= Time.deltaTime * Parameters.timeModifier;
+            realTimer -= Time.deltaTime * GameManager.instance.timeModifier;
             timer = (int)Mathf.Round(realTimer);
             SetTimerDisplay();
             if (timer <= 0) {
@@ -54,7 +54,7 @@ public class MicroWave : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D col) {
         Plat plat = col.GetComponent<Plat>();
-        if (plat && isOpen && !cookingMeal) {
+        if (plat && plat.isHeld && isOpen && !cookingMeal) {
             cookingMeal = plat;
             plat.microWaveThatContainsMe = this;
         }
