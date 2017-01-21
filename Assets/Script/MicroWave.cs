@@ -1,13 +1,21 @@
 ﻿using UnityEngine;
 
+public enum MicrowaveType {
+    Normal, Bomb, Doorless, Locked, Broken, Nuclear
+}
+
 public class MicroWave : MonoBehaviour {
 
     public bool isOpen, isCooking;
     public int timer;
-    public float radiationPower = 1;
+    float radiationPower = 1;
 
     public SpriteRenderer openDoor, closedDoor;
     public Plat cookingMeal;
+
+    public MicrowaveType type;
+
+    public bool locked, exploded, outOfOrder;
 
     float realTimer;
     TextMesh timerDisplay;
@@ -24,6 +32,18 @@ public class MicroWave : MonoBehaviour {
 
         gameManager = GameManager.instance;
         radiations = transform.Find("Radiations").GetComponent<ParticleSystem>();
+
+        locked = type == MicrowaveType.Locked;
+    }
+
+    public void StopCooking() {
+        realTimer = 0;
+        timer = 0;
+        SetTimerDisplay();
+        isCooking = false;
+        mask.sprite = gameManager.maskDoorOff;
+
+        cookingLED.color = Color.white; // Temporary
     }
 
     void Update() {
@@ -31,26 +51,17 @@ public class MicroWave : MonoBehaviour {
             realTimer -= Time.deltaTime * gameManager.timeModifier;
             timer = (int)Mathf.Round(realTimer);
             SetTimerDisplay();
-            if (timer <= 0) {
-                realTimer = 0;
-                timer = 0;
-                isCooking = false;
-                mask.sprite = gameManager.maskDoorOff;
 
-                cookingLED.color = Color.white; // Temporary
-            }
+            if (timer <= 0) StopCooking();
 
-            if (isOpen) {
+            if (isOpen)
                 gameManager.radiations += Time.deltaTime * radiationPower;
-                // Radiations here
-            }
 
         } else if (Time.time > lastTimeScrolled + 1 && timer > 0) {
             isCooking = true;
             mask.sprite = gameManager.maskDoorOn;
 
             if (isOpen) radiations.Play();
-
             cookingLED.color = Color.cyan; // Temporary
 
         } else if (!isOpen) {
@@ -61,6 +72,8 @@ public class MicroWave : MonoBehaviour {
     
     float lastTimeScrolled;
     void OnMouseOver() {
+        if (locked || exploded || outOfOrder) return;
+
         int mouseWheel = (int)(Input.GetAxisRaw("Mouse ScrollWheel")*10);
 
         if (mouseWheel != 0) {
@@ -72,7 +85,15 @@ public class MicroWave : MonoBehaviour {
         }
     }
 
+    void Explosion() {
+        StopCooking();
+        exploded = true;
+        timerDisplay.text = "";
+    }
+
     void OnTriggerEnter2D(Collider2D col) {
+        if (locked || exploded || outOfOrder) return;
+
         Plat plat = col.GetComponent<Plat>();
         if (plat && plat.isHeld && isOpen && !cookingMeal) {
             plat.microWaveThatContainsMe = this;
@@ -80,6 +101,8 @@ public class MicroWave : MonoBehaviour {
     }
     
     void OnTriggerStay2D(Collider2D col) {
+        if (locked || exploded || outOfOrder) return;
+
         Plat plat = col.GetComponent<Plat>();
         if (plat && !plat.isHeld && plat.microWaveThatContainsMe == this && isOpen && !cookingMeal) {
             cookingMeal = plat;
@@ -87,6 +110,8 @@ public class MicroWave : MonoBehaviour {
     }
 
     void OnTriggerExit2D(Collider2D col) {
+        if (locked || exploded || outOfOrder) return;
+
         Plat plat = col.GetComponent<Plat>();
         if (plat && plat.isHeld && isOpen && !cookingMeal) {
             plat.microWaveThatContainsMe = null;
@@ -99,5 +124,4 @@ public class MicroWave : MonoBehaviour {
         string zeroDigit = seconds < 10 ? "0" : "";
         timerDisplay.text = minutes + ":" + zeroDigit + seconds;
     }
-
 }

@@ -17,6 +17,8 @@ public class MicroWaveDoorButton : MonoBehaviour {
     }
 
     void OnMouseOver() {
+        if (microWave.locked) return;
+
         if (Input.GetMouseButtonDown(0)) {
             microWave.isOpen ^= true;
 

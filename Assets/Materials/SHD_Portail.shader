@@ -88,10 +88,10 @@ Shader "Custom/SHD_Smoke" {
                 float3 directDiffuse = max( 0.0, NdotL) * attenColor;
                 float3 indirectDiffuse = float3(0,0,0);
                 indirectDiffuse += UNITY_LIGHTMODEL_AMBIENT.rgb; // Ambient Light
-                float4 node_6880 = _Time + _TimeEditor;
-                float2 node_8320 = (i.uv0+node_6880.g*float2(-0.3,-0.2));
+                float4 node_7047 = _Time + _TimeEditor;
+                float2 node_8320 = (i.uv0+node_7047.g*float2(-0.3,-0.2));
                 float4 _Noise_var = tex2D(_Noise,TRANSFORM_TEX(node_8320, _Noise));
-                float3 node_1732 = lerp(float3((i.uv0+node_6880.g*float2(0.7,0)),0.0),_Noise_var.rgb.rgb,_node_8867);
+                float3 node_1732 = lerp(float3((i.uv0+node_7047.g*float2(0.7,0)),0.0),_Noise_var.rgb.rgb,_node_8867);
                 float4 _Smoke_var = tex2D(_Smoke,TRANSFORM_TEX(node_1732, _Smoke));
                 float3 diffuseColor = _Smoke_var.rgb;
                 float3 diffuse = (directDiffuse + indirectDiffuse) * diffuseColor;
@@ -174,10 +174,10 @@ Shader "Custom/SHD_Smoke" {
 /////// Diffuse:
                 float NdotL = max(0.0,dot( normalDirection, lightDirection ));
                 float3 directDiffuse = max( 0.0, NdotL) * attenColor;
-                float4 node_3270 = _Time + _TimeEditor;
-                float2 node_8320 = (i.uv0+node_3270.g*float2(-0.3,-0.2));
+                float4 node_9254 = _Time + _TimeEditor;
+                float2 node_8320 = (i.uv0+node_9254.g*float2(-0.3,-0.2));
                 float4 _Noise_var = tex2D(_Noise,TRANSFORM_TEX(node_8320, _Noise));
-                float3 node_1732 = lerp(float3((i.uv0+node_3270.g*float2(0.7,0)),0.0),_Noise_var.rgb.rgb,_node_8867);
+                float3 node_1732 = lerp(float3((i.uv0+node_9254.g*float2(0.7,0)),0.0),_Noise_var.rgb.rgb,_node_8867);
                 float4 _Smoke_var = tex2D(_Smoke,TRANSFORM_TEX(node_1732, _Smoke));
                 float3 diffuseColor = _Smoke_var.rgb;
                 float3 diffuse = directDiffuse * diffuseColor;

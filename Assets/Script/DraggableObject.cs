@@ -15,7 +15,7 @@ public class DraggableObject : MonoBehaviour {
         }
     }
 
-    void MoveToMousePosition() {
+    public virtual void MoveToMousePosition() {
         float screenDepth = Camera.main.WorldToScreenPoint(transform.position).z;
         transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenDepth));
     }

@@ -16,6 +16,7 @@ public class Plat : MonoBehaviour {
     public int valeurDuBol;
     public static Plat currentlyHolding;
     public bool inStarGate;
+    public bool hasMetallicObject;
 
     public CookingState cookingState;
     public enum CookingState {
