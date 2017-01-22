@@ -4,10 +4,12 @@ public class StarGate : BouffeDestroyer {
 
     GameManager gameManager;
     ParticleSystem zapPS, lightningPS;
+    AudioSource zapSound;
 
     public override void Start() {
         base.Start();
         gameManager = GameManager.instance;
+        zapSound = GetComponent<AudioSource>();
         zapPS = transform.Find("ZapParticleSystem").GetComponent<ParticleSystem>();
         lightningPS = transform.Find("Lightning").GetComponent<ParticleSystem>();
     }
@@ -34,19 +36,25 @@ public class StarGate : BouffeDestroyer {
             } else {
                 gameManager.satisfaction += gameManager.badScore * valeur;
             }
+            zapSound.Play();
             zapPS.Play();
             lightningPS.Play();
             DestroyBouffe(col);
 
         } else if (col.GetComponent<OutOfOrderPostIt>() && !Mouse.holding) {
+            zapSound.Play();
             zapPS.Play();
             lightningPS.Play();
             Destroy(col.gameObject);
+
         } else if (col.GetComponent<Key>() && !Mouse.holding) {
+            zapSound.Play();
             zapPS.Play();
             lightningPS.Play();
             DestroyBouffe(col);
+
         } else if (col.GetComponent<MetallicObject>() && !Mouse.holding) {
+            zapSound.Play();
             zapPS.Play();
             lightningPS.Play();
             Destroy(col.gameObject);

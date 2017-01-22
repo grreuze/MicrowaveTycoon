@@ -15,7 +15,10 @@ public class Plat : MonoBehaviour {
     
     public int valeurDuBol;
     public bool inStarGate;
-    public bool hasMetallicObject, keepCold;
+    [HideInInspector]
+    public bool hasMetallicObject;
+    public bool keepCold, cantHaveMetallicObjects;
+    public bool neverAskedForTHis, manScream;
 
     public CookingState cookingState;
     public enum CookingState {
@@ -30,6 +33,7 @@ public class Plat : MonoBehaviour {
     SpriteRenderer bouffe;
     GameObject smoke;
     ParticleSystem smokeClouds, shine;
+    AudioSource audioSource;
 
     float speed;
     Vector2 movement;
@@ -43,6 +47,7 @@ public class Plat : MonoBehaviour {
     void Start() {
         gameManager = GameManager.instance;
 
+        audioSource = GetComponent<AudioSource>();
         leTapisRoulant = FindObjectOfType<TapisRoulant>();
         if (!leTapisRoulant) Debug.LogError("IL N'Y A PAS DE TAPIS ROULANT");
         leGameObjectDuTapisRoulant = leTapisRoulant.gameObject;
@@ -172,6 +177,10 @@ public class Plat : MonoBehaviour {
         rb.gravityScale = 0;
         transform.localScale = Vector2.one;
         if (microWaveThatContainsMe) {
+
+            audioSource.clip = SoundManager.instance.retirerPlat;
+            audioSource.Play();
+
             microWaveThatContainsMe.cookingMeal = null;
             microWaveThatContainsMe = null;
             SortLayer(transform, "PlatOut");
@@ -191,6 +200,19 @@ public class Plat : MonoBehaviour {
         if (microWaveThatContainsMe) {
             myCollider.isTrigger = true;
 
+            audioSource.clip = SoundManager.instance.placerPlat;
+            audioSource.Play();
+
+            if (microWaveThatContainsMe.isCooking) {
+                if (neverAskedForTHis) {
+                    audioSource.clip = SoundManager.instance.neverAsked;
+                    audioSource.Play();
+                } else if (manScream) {
+                    audioSource.clip = SoundManager.instance.manScreaming;
+                    audioSource.Play();
+                }
+            }
+            
             transform.parent = null;
             transform.localScale = Vector2.one * 0.7f;
             transform.parent = microWaveThatContainsMe.closedDoor.transform;

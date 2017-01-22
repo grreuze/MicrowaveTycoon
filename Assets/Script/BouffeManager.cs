@@ -58,7 +58,7 @@ public class BouffeManager : MonoBehaviour {
         if (Random.value > 0.8f) {
             if (needToSpawnKey)
                 SpawnKey(transformDuPlat);
-            else 
+            else if (!transformDuPlat.GetComponent<Plat>().cantHaveMetallicObjects)
                 SpawnMetallicObject(transformDuPlat);
         }
     }

@@ -23,9 +23,16 @@ public class MicroWave : MonoBehaviour {
     TextMesh timerDisplay;
     SpriteRenderer cookingLED, mask;
     GameManager gameManager;
-    ParticleSystem radiations, smokeClouds;
+    ParticleSystem radiations, smokeClouds, explosion;
+
+    AudioSource audioSource;
+    AudioSource cuissonLoop;
+    SoundManager soundManager;
 
     void Awake() {
+        audioSource = GetComponent<AudioSource>();
+        cuissonLoop = GetComponentInParent<AudioSource>();
+
         timerDisplay = GetComponentInChildren<TextMesh>();
         cookingLED = transform.Find("CookingLED").GetComponent<SpriteRenderer>();
         openDoor = transform.Find("Door").GetComponent<SpriteRenderer>();
@@ -35,9 +42,11 @@ public class MicroWave : MonoBehaviour {
 
         backgroundTurnedOff = background.sprite;
 
+        soundManager = SoundManager.instance;
         gameManager = GameManager.instance;
         radiations = transform.Find("Radiations").GetComponent<ParticleSystem>();
         smokeClouds = transform.Find("SmokeClouds").GetComponent<ParticleSystem>();
+        explosion = transform.Find("Explosion").GetComponent<ParticleSystem>();
 
         if (type == MicrowaveType.Nuclear) radiationPower = 3;
 
@@ -47,9 +56,7 @@ public class MicroWave : MonoBehaviour {
             cookingLED.gameObject.SetActive(false);
             timer = 599;
             realTimer = timer;
-            isCooking = true;
-            background.sprite = backgroundTurnedOn;
-            mask.sprite = gameManager.maskDoorOn;
+            StartCooking();
         }
     }
 
@@ -60,8 +67,24 @@ public class MicroWave : MonoBehaviour {
         isCooking = false;
         background.sprite = backgroundTurnedOff;
         mask.sprite = gameManager.maskDoorOff;
-
+        PlaySound(soundManager.ding);
         cookingLED.color = Color.white; // Temporary
+    }
+
+    public void PlaySound(AudioClip clip) {
+        audioSource.clip = clip;
+        audioSource.Play();
+    }
+
+    void StartCooking() {
+        isCooking = true;
+        PlaySound(soundManager.bip);
+        
+        if (!cuissonLoop.isPlaying)
+            cuissonLoop.Play();
+
+        background.sprite = backgroundTurnedOn;
+        mask.sprite = gameManager.maskDoorOn;
     }
 
     void Update() {
@@ -71,9 +94,7 @@ public class MicroWave : MonoBehaviour {
                 exploded = false;
                 smokeClouds.Stop();
                 if (type == MicrowaveType.Bomb) {
-                    isCooking = true;
-                    background.sprite = backgroundTurnedOn;
-                    mask.sprite = gameManager.maskDoorOn;
+                    StartCooking();
                     realTimer = bombTimer;
                     timer = (int)Mathf.Round(realTimer);
                 }
@@ -93,6 +114,8 @@ public class MicroWave : MonoBehaviour {
 
         } else if (Time.time > lastTimeScrolled + 1 && timer > 0) {
             isCooking = true;
+            PlaySound(soundManager.bip);
+
             if (cookingMeal && cookingMeal.hasMetallicObject) {
                 Explosion();
                 return;
@@ -131,12 +154,14 @@ public class MicroWave : MonoBehaviour {
     }
 
     void Explosion() {
+        PlaySound(soundManager.explosion);
         bombTimer = timer;
         StopCooking();
         exploded = true;
         timeSinceExplosion = 0;
         timerDisplay.text = "KO";
         smokeClouds.Play();
+        explosion.Play();
     }
 
     void OnTriggerEnter2D(Collider2D col) {

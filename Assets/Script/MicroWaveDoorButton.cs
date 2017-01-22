@@ -34,6 +34,8 @@ public class MicroWaveDoorButton : MonoBehaviour {
         if (Input.GetMouseButtonDown(0)) {
             microWave.isOpen ^= true;
 
+            microWave.PlaySound(microWave.isOpen ? SoundManager.instance.ouvrirPorte : SoundManager.instance.fermerPorte);
+            
             microWave.openDoor.enabled = microWave.isOpen;
             mask.enabled = microWave.closedDoor.enabled = !microWave.isOpen;
 

@@ -6,6 +6,7 @@ public class CompteurGeiger : MonoBehaviour {
     public float minRadiation = 0, maxRadiation = 50;
     float rot, lastRot;
 
+    AudioSource geigerLoop;
     GameManager gameManager;
     Transform transformCache;
     public SpriteRenderer allumage;
@@ -14,6 +15,7 @@ public class CompteurGeiger : MonoBehaviour {
 
 	void Start () {
         gameManager = GameManager.instance;
+        geigerLoop = GetComponent<AudioSource>();
         transformCache = transform;
 	}
 	
@@ -23,10 +25,14 @@ public class CompteurGeiger : MonoBehaviour {
         float rad = gameManager.radiations / maxRadiation;
         rot = Mathf.Lerp(minAngle, maxAngle, rad);
         transformCache.localRotation = Quaternion.Euler(0, 0, rot);
-        if (rot < lastRot)
-        {
+        if (rot < lastRot) {
+            if (!geigerLoop.isPlaying)
+                geigerLoop.Play();
             allumage.material = allume;         //Pour allumer et éteindre la diode qui indique qu'on se prend des rads
+        } else {
+            if (geigerLoop.isPlaying)
+                geigerLoop.Stop();
+            allumage.material = eteint;
         }
-        else allumage.material = eteint;
     }
 }
