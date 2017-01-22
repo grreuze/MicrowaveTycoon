@@ -31,7 +31,8 @@ public class MicroWave : MonoBehaviour {
 
     void Awake() {
         audioSource = GetComponent<AudioSource>();
-        cuissonLoop = GetComponentInParent<AudioSource>();
+        cuissonLoop = transform.parent.GetComponent<AudioSource>();
+        print(cuissonLoop);
 
         timerDisplay = GetComponentInChildren<TextMesh>();
         cookingLED = transform.Find("CookingLED").GetComponent<SpriteRenderer>();
@@ -67,7 +68,8 @@ public class MicroWave : MonoBehaviour {
         isCooking = false;
         background.sprite = backgroundTurnedOff;
         mask.sprite = gameManager.maskDoorOff;
-        PlaySound(soundManager.ding);
+        if (!exploded) PlaySound(soundManager.ding);
+        cuissonLoop.volume -= 0.1f;
         cookingLED.color = Color.white; // Temporary
     }
 
@@ -79,9 +81,8 @@ public class MicroWave : MonoBehaviour {
     void StartCooking() {
         isCooking = true;
         PlaySound(soundManager.bip);
-        
-        if (!cuissonLoop.isPlaying)
-            cuissonLoop.Play();
+
+        cuissonLoop.volume += 0.1f;
 
         background.sprite = backgroundTurnedOn;
         mask.sprite = gameManager.maskDoorOn;
@@ -115,11 +116,22 @@ public class MicroWave : MonoBehaviour {
         } else if (Time.time > lastTimeScrolled + 1 && timer > 0) {
             isCooking = true;
             PlaySound(soundManager.bip);
+            cuissonLoop.volume += 0.1f;
 
-            if (cookingMeal && cookingMeal.hasMetallicObject) {
-                Explosion();
-                return;
+            if (cookingMeal) {
+                if (cookingMeal.hasMetallicObject) {
+                    Explosion();
+                    return;
+                }
+
+                if (cookingMeal.neverAskedForTHis) {
+                    cookingMeal.PlaySound(soundManager.neverAsked);
+                }
+                else if (cookingMeal.manScream){
+                    cookingMeal.PlaySound(soundManager.manScreaming);
+                }
             }
+
             background.sprite = backgroundTurnedOn;
             mask.sprite = gameManager.maskDoorOn;
 
@@ -156,8 +168,8 @@ public class MicroWave : MonoBehaviour {
     void Explosion() {
         PlaySound(soundManager.explosion);
         bombTimer = timer;
-        StopCooking();
         exploded = true;
+        StopCooking();
         timeSinceExplosion = 0;
         timerDisplay.text = "KO";
         smokeClouds.Play();

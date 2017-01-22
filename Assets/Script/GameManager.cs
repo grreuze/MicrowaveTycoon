@@ -25,7 +25,8 @@ public class GameManager : MonoBehaviour {
 	}
 
     void Update() {
-        satisfaction -= Time.deltaTime * 1/3;
+        satisfaction -= Time.deltaTime;
+        satisfaction = Mathf.Min(satisfaction, 100);
         satisfactionSlider.value = satisfaction;
     }
 

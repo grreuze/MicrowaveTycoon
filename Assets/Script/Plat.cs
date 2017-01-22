@@ -88,7 +88,7 @@ public class Plat : MonoBehaviour {
         DoFX();
         DoCooking();
 
-        if (!Input.GetMouseButton(0))
+        if (isHeld && !Input.GetMouseButton(0))
             Drop();
     }
     
@@ -193,23 +193,25 @@ public class Plat : MonoBehaviour {
         transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenDepth));
     }
 
+    public void PlaySound(AudioClip clip) {
+        audioSource.clip = clip;
+        audioSource.Play();
+    }
+
     void Drop() {
         isHeld = false;
         Mouse.holding = null;
         rb.gravityScale = 1;
         if (microWaveThatContainsMe) {
             myCollider.isTrigger = true;
-
             audioSource.clip = SoundManager.instance.placerPlat;
             audioSource.Play();
 
             if (microWaveThatContainsMe.isCooking) {
                 if (neverAskedForTHis) {
-                    audioSource.clip = SoundManager.instance.neverAsked;
-                    audioSource.Play();
+                    PlaySound(SoundManager.instance.neverAsked);
                 } else if (manScream) {
-                    audioSource.clip = SoundManager.instance.manScreaming;
-                    audioSource.Play();
+                    PlaySound(SoundManager.instance.manScreaming);
                 }
             }
             

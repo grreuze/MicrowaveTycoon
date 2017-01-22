@@ -22,6 +22,8 @@ public class CompteurGeiger : MonoBehaviour {
 	void Update () {
         lastRot = rot;
         gameManager.radiations = Mathf.Clamp(gameManager.radiations, minRadiation, maxRadiation);
+        geigerLoop.volume = Mathf.Lerp(0, 0.5f, gameManager.radiations / maxRadiation);
+
         float rad = gameManager.radiations / maxRadiation;
         rot = Mathf.Lerp(minAngle, maxAngle, rad);
         transformCache.localRotation = Quaternion.Euler(0, 0, rot);
