@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
@@ -13,6 +14,8 @@ public class GameManager : MonoBehaviour {
     public Key key;
     public MetallicObject[] metallicObjects;
 
+    public ParticleSystem endExplosion;
+
     [Header("VARIABLES")]
     public float timeModifier = 1;
     public float satisfaction = 50;
@@ -20,14 +23,36 @@ public class GameManager : MonoBehaviour {
 
     public float goodScore, badScore, perfectScore;
 
+    Avatar avatar;
+
+    bool isOver;
+
     void Awake () {
         instance = this;
+        avatar = FindObjectOfType<Avatar>();
 	}
 
     void Update() {
         satisfaction -= Time.deltaTime;
         satisfaction = Mathf.Min(satisfaction, 100);
         satisfactionSlider.value = satisfaction;
+        if (satisfaction <= 0) {
+            EndGame();
+        }
     }
 
+    public void EndGame() {
+        if (isOver) return;
+        isOver = true;
+
+        Camera.main.GetComponent<AudioSource>().Play();
+        endExplosion.Play();
+        avatar.KOScreen.enabled = true;
+
+        Invoke("GoToEndScene", endExplosion.main.duration);
+    }
+
+    public void GoToEndScene() {
+        SceneManager.LoadScene(3);
+    }
 }

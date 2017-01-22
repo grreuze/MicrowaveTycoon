@@ -18,10 +18,8 @@ public class MicroWaveDoorButton : MonoBehaviour {
         if (microWave.type == MicrowaveType.Doorless) {
 
             microWave.isOpen = true;
-
             microWave.closedDoor.gameObject.SetActive(true);
             mask.enabled = microWave.closedDoor.enabled = false;
-
             microWave.openDoor.gameObject.SetActive(false);
             gameObject.SetActive(false);
         }

@@ -3,6 +3,7 @@
 public class Avatar : MonoBehaviour {
 
     public RotateTowardsMouse arm;
+    public SpriteRenderer KOScreen;
 
     ParticleSystem waves;
 

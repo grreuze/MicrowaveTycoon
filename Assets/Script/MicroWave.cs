@@ -88,6 +88,8 @@ public class MicroWave : MonoBehaviour {
         mask.sprite = gameManager.maskDoorOn;
     }
 
+    bool isOver;
+
     void Update() {
         if (exploded) {
             timeSinceExplosion += Time.deltaTime;
@@ -108,7 +110,15 @@ public class MicroWave : MonoBehaviour {
             timer = (int)Mathf.Round(realTimer);
             SetTimerDisplay();
 
-            if (timer <= 0) StopCooking();
+            if (timer <= 0) {
+                if (type == MicrowaveType.Bomb && !isOver) {
+                    isOver = true;
+                    explosion.Play();
+                    gameManager.EndGame();
+                }
+                else
+                    StopCooking();
+            }
 
             if (isOpen)
                 gameManager.radiations += Time.deltaTime * radiationPower;
