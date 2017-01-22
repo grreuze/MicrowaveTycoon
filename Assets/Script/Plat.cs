@@ -93,6 +93,8 @@ public class Plat : MonoBehaviour {
         }
         if (isHeld && canDrag && !Mouse.holding)
             StartHolding();
+
+        if (microWaveThatContainsMe) microWaveThatContainsMe.MyMouseOver();
     }
     
     void OnCollisionStay2D(Collision2D col) {
@@ -169,6 +171,7 @@ public class Plat : MonoBehaviour {
         if (microWaveThatContainsMe) {
             microWaveThatContainsMe.cookingMeal = null;
             microWaveThatContainsMe = null;
+            SortLayer(transform, "PlatOut");
         }
         Mouse.holding = gameObject;
     }
@@ -189,9 +192,20 @@ public class Plat : MonoBehaviour {
             transform.localScale = Vector2.one * 0.7f;
             transform.parent = microWaveThatContainsMe.closedDoor.transform;
             transform.rotation = Quaternion.identity;
+            SortLayer(transform, "PlatIn");
 
             rb.bodyType = RigidbodyType2D.Static;
             transform.localPosition = Vector2.zero;
+        }
+    }
+
+    void SortLayer(Transform trans, string layer)
+    {
+        SpriteRenderer sprite = trans.GetComponent<SpriteRenderer>();
+        if (sprite) sprite.sortingLayerName = layer;
+        foreach (Transform child in trans)
+        {
+            SortLayer(child, layer);
         }
     }
 

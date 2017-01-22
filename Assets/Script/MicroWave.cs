@@ -72,7 +72,7 @@ public class MicroWave : MonoBehaviour {
             mask.sprite = gameManager.maskDoorOn;
 
             if (isOpen) radiations.Play();
-            cookingLED.color = Color.cyan; // Temporary
+            cookingLED.color = Color.red; // Temporary
 
         } else if (!isOpen) {
             // let's reduce radiations a bit
@@ -82,11 +82,17 @@ public class MicroWave : MonoBehaviour {
     
     float lastTimeScrolled;
     void OnMouseOver() {
+        MyMouseOver();
+    }
+
+    public void MyMouseOver() //Pour pouvoir l'appeler depuis d'autres scripts (StopButton, MicroWaveDoor, Plat...) comme ça on peut ScrollWheel depuis les autres colliders
+    {
         if (locked || exploded || outOfOrder || type == MicrowaveType.Bomb) return;
 
-        int mouseWheel = (int)(Input.GetAxisRaw("Mouse ScrollWheel")*10);
+        int mouseWheel = (int)(Input.GetAxisRaw("Mouse ScrollWheel") * 10);
 
-        if (mouseWheel != 0 && timer < 594) {
+        if (mouseWheel != 0 && timer < 594)
+        {
             timer += mouseWheel * 5;
             timer = Mathf.Max(0, timer);
             realTimer = timer;
@@ -138,5 +144,16 @@ public class MicroWave : MonoBehaviour {
         int seconds = Mathf.Max(0, timer - minutes * 60);
         string zeroDigit = seconds < 10 ? "0" : "";
         timerDisplay.text = minutes + ":" + zeroDigit + seconds;
+    }
+
+    public void SetTimerFromSomewhereElse()
+    {
+        if (locked || exploded || outOfOrder || type == MicrowaveType.Bomb) return;
+
+        timer += 5;
+        timer = Mathf.Max(0, timer);
+        realTimer = timer;
+        lastTimeScrolled = Time.time;
+        SetTimerDisplay();
     }
 }

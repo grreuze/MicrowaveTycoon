@@ -42,5 +42,7 @@ public class MicroWaveDoorButton : MonoBehaviour {
             if (microWave.isOpen && microWave.isCooking) radiations.Play();
             else radiations.Stop();
         }
+
+        microWave.MyMouseOver();
     }
 }
