@@ -19,7 +19,8 @@ public class TitleScreen : MonoBehaviour {
     }
 
     void SelectDefaultButton() {
-        EventSystem.current.SetSelectedGameObject(defaultButtonSelected);
+        if (defaultButtonSelected)
+            EventSystem.current.SetSelectedGameObject(defaultButtonSelected);
     }
 
     #endregion

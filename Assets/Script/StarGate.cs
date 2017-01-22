@@ -21,7 +21,7 @@ public class StarGate : BouffeDestroyer {
     void OnTriggerStay2D(Collider2D col) {
         
         Plat plat = col.GetComponent<Plat>();
-        
+
         if (plat && !plat.isHeld && plat.inStarGate) {
 
             //Ajouter des points de satisfaction au gars, etc
@@ -42,6 +42,10 @@ public class StarGate : BouffeDestroyer {
             zapPS.Play();
             lightningPS.Play();
             Destroy(col.gameObject);
+        } else if (col.GetComponent<Key>() && !Mouse.holding) {
+            zapPS.Play();
+            lightningPS.Play();
+            DestroyBouffe(col);
         }
     }
 

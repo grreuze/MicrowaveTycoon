@@ -9,7 +9,8 @@ public class MetallicObject : DraggableObject {
 
     float speed;
     Vector2 movement;
-    Rigidbody2D rb;
+    public Rigidbody2D rb;
+    public new BoxCollider2D collider;
 
     public virtual void Start() {
         parent = GetComponentInParent<Plat>();
@@ -18,9 +19,11 @@ public class MetallicObject : DraggableObject {
         if (!leTapisRoulant) Debug.LogError("IL N'Y A PAS DE TAPIS ROULANT");
         leGameObjectDuTapisRoulant = leTapisRoulant.gameObject;
         rb = GetComponent<Rigidbody2D>();
+        collider = GetComponent<BoxCollider2D>();
     }
 
     public override void MoveToMousePosition() {
+        collider.isTrigger = false;
         rb.bodyType = RigidbodyType2D.Dynamic;
         base.MoveToMousePosition();
         transform.parent = null;

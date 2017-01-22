@@ -45,4 +45,44 @@ public class MicroWaveDoorButton : MonoBehaviour {
 
         microWave.MyMouseOver();
     }
+
+    bool canPutKeyIn;
+
+    void OnTriggerEnter2D(Collider2D col) {
+        if (!microWave.locked) return;
+
+        Key key = col.GetComponent<Key>();
+
+        canPutKeyIn = key && Mouse.holding;
+    }
+    void OnTriggerExit2D(Collider2D col) {
+        if (!microWave.locked) return;
+
+        Key key = col.GetComponent<Key>();
+
+        canPutKeyIn = !(key && !Mouse.holding);
+    }
+
+    void OnTriggerStay2D(Collider2D col) {
+        if (!microWave.locked) return;
+
+        Key key = col.GetComponent<Key>();
+
+        if (key && !Mouse.holding && canPutKeyIn) {
+
+            key.transform.parent = null;
+            key.enabled = false;
+
+            key.rb.bodyType = RigidbodyType2D.Kinematic;
+            key.rb.velocity = Vector2.zero;
+            key.rb.freezeRotation = true;
+            key.collider.enabled = false;
+
+            key.transform.localScale = new Vector2(-1, 1);
+            key.transform.position = new Vector2(-0.35f, -0.1f);
+            key.transform.localRotation = Quaternion.identity;
+
+            microWave.locked = false;
+        }
+    }
 }

@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
     public Material matDefault, matCuit, matTropCuit;
     public Slider satisfactionSlider;
     public Sprite maskDoorOn, maskDoorOff;
+    public Key key;
 
     [Header("VARIABLES")]
     public float timeModifier = 1;

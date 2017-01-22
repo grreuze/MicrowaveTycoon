@@ -18,6 +18,12 @@ public class BouffeDestroyer : MonoBehaviour {
             plat.gameObject.SetActive(false);
             plat.transform.position = bouffeManager.instantiatePosition;
             plat.transform.parent = pool;
+            return;
+        }
+        Key key = col.GetComponent<Key>();
+        if (key) {
+            key.gameObject.SetActive(false);
+            bouffeManager.needToSpawnKey = true;
         }
     }
 
