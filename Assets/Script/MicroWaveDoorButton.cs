@@ -68,9 +68,9 @@ public class MicroWaveDoorButton : MonoBehaviour {
 
         Key key = col.GetComponent<Key>();
 
-        if (key && !Mouse.holding && canPutKeyIn) {
-
-            key.transform.parent = null;
+        if (key && key.transform.parent == null && !Mouse.holding && canPutKeyIn) {
+            
+            key.inserted = true;
             key.enabled = false;
 
             key.rb.bodyType = RigidbodyType2D.Kinematic;

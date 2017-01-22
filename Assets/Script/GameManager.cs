@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour {
     public Slider satisfactionSlider;
     public Sprite maskDoorOn, maskDoorOff;
     public Key key;
+    public MetallicObject[] metallicObjects;
 
     [Header("VARIABLES")]
     public float timeModifier = 1;

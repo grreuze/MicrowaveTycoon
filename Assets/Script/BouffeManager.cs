@@ -42,6 +42,7 @@ public class BouffeManager : MonoBehaviour {
 	}
 
     void SpawnBouffe(GameObject prefab) {
+        if (prefab == null) prefab = listesDePlatsSelonLeNiveauDeDifficulté[difficultyLevel].plats[0];
 
         Transform transformDuPlat = pool.transform.Find(prefab.name);
         if (transformDuPlat) {
@@ -54,17 +55,22 @@ public class BouffeManager : MonoBehaviour {
             nouveauPlat.name = prefab.name;
             transformDuPlat = nouveauPlat.transform;
         }
-        if (needToSpawnKey && Random.value > 0.7f) SpawnKey(transformDuPlat);
+        if (Random.value > 0.8f) {
+            if (needToSpawnKey)
+                SpawnKey(transformDuPlat);
+            else 
+                SpawnMetallicObject(transformDuPlat);
+        }
     }
 
     Key key;
     void SpawnKey(Transform transform) {
 
-        if (!key) {
-            key = FindObjectOfType<Key>();
-        }
+        transform.GetComponent<Plat>().hasMetallicObject = true;
+        if (!key) key = FindObjectOfType<Key>();
+        key.inserted = false;
         key.transform.parent = transform;
-        key.transform.localPosition = Vector2.zero;
+        key.transform.localPosition = Vector3.back;
         key.rb.bodyType = RigidbodyType2D.Kinematic;
         key.rb.velocity = Vector2.zero;
         key.rb.gravityScale = 1;
@@ -74,4 +80,19 @@ public class BouffeManager : MonoBehaviour {
         needToSpawnKey = false;
     }
 
+    void SpawnMetallicObject(Transform transform) {
+
+        transform.GetComponent<Plat>().hasMetallicObject = true;
+
+        MetallicObject metal = Instantiate(GameManager.instance.metallicObjects[Random.Range(0, GameManager.instance.metallicObjects.Length)]);
+
+        metal.transform.parent = transform;
+        metal.transform.localPosition = Vector3.back;
+        metal.rb = metal.GetComponent<Rigidbody2D>();
+        metal.rb.bodyType = RigidbodyType2D.Kinematic;
+        metal.rb.velocity = Vector2.zero;
+        metal.rb.gravityScale = 1;
+        metal.GetComponent<BoxCollider2D>().isTrigger = true;
+        metal.gameObject.SetActive(true);
+    }
 }

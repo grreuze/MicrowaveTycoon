@@ -23,11 +23,12 @@ public class MetallicObject : DraggableObject {
     }
 
     public override void MoveToMousePosition() {
+        parent = GetComponentInParent<Plat>();
+        if (parent) parent.hasMetallicObject = false;
         collider.isTrigger = false;
         rb.bodyType = RigidbodyType2D.Dynamic;
         base.MoveToMousePosition();
         transform.parent = null;
-        if (parent) parent.hasMetallicObject = false;
         rb.velocity = Vector2.zero;
     }
 

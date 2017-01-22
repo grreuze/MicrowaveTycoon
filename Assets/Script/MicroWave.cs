@@ -8,30 +8,36 @@ public class MicroWave : MonoBehaviour {
 
     public bool isOpen, isCooking;
     public int timer;
-    public float radiationPower = 1;
+    public float radiationPower = 1, timeToRecoverFromExplosion = 5;
 
-    public SpriteRenderer openDoor, closedDoor;
+    public Sprite backgroundTurnedOn, backgroundTurnedOff;
+
+    public SpriteRenderer openDoor, closedDoor, background;
     public Plat cookingMeal;
 
     public MicrowaveType type;
 
     public bool locked, exploded, outOfOrder;
 
-    float realTimer;
+    float realTimer, timeSinceExplosion, bombTimer;
     TextMesh timerDisplay;
     SpriteRenderer cookingLED, mask;
     GameManager gameManager;
-    ParticleSystem radiations;
+    ParticleSystem radiations, smokeClouds;
 
     void Awake() {
         timerDisplay = GetComponentInChildren<TextMesh>();
         cookingLED = transform.Find("CookingLED").GetComponent<SpriteRenderer>();
         openDoor = transform.Find("Door").GetComponent<SpriteRenderer>();
         closedDoor = transform.Find("ClosedDoor").GetComponent<SpriteRenderer>();
+        background = transform.Find("Microwave_1").GetComponent<SpriteRenderer>();
         mask = closedDoor.transform.GetChild(0).GetComponent<SpriteRenderer>();
+
+        backgroundTurnedOff = background.sprite;
 
         gameManager = GameManager.instance;
         radiations = transform.Find("Radiations").GetComponent<ParticleSystem>();
+        smokeClouds = transform.Find("SmokeClouds").GetComponent<ParticleSystem>();
 
         if (type == MicrowaveType.Nuclear) radiationPower = 3;
 
@@ -42,6 +48,7 @@ public class MicroWave : MonoBehaviour {
             timer = 599;
             realTimer = timer;
             isCooking = true;
+            background.sprite = backgroundTurnedOn;
             mask.sprite = gameManager.maskDoorOn;
         }
     }
@@ -51,12 +58,29 @@ public class MicroWave : MonoBehaviour {
         timer = 0;
         SetTimerDisplay();
         isCooking = false;
+        background.sprite = backgroundTurnedOff;
         mask.sprite = gameManager.maskDoorOff;
 
         cookingLED.color = Color.white; // Temporary
     }
 
     void Update() {
+        if (exploded) {
+            timeSinceExplosion += Time.deltaTime;
+            if (timeSinceExplosion > timeToRecoverFromExplosion) {
+                exploded = false;
+                smokeClouds.Stop();
+                if (type == MicrowaveType.Bomb) {
+                    isCooking = true;
+                    background.sprite = backgroundTurnedOn;
+                    mask.sprite = gameManager.maskDoorOn;
+                    realTimer = bombTimer;
+                    timer = (int)Mathf.Round(realTimer);
+                }
+                SetTimerDisplay();
+            }
+        }
+
         if (isCooking) {
             realTimer -= Time.deltaTime * gameManager.timeModifier * radiationPower;
             timer = (int)Mathf.Round(realTimer);
@@ -69,6 +93,11 @@ public class MicroWave : MonoBehaviour {
 
         } else if (Time.time > lastTimeScrolled + 1 && timer > 0) {
             isCooking = true;
+            if (cookingMeal && cookingMeal.hasMetallicObject) {
+                Explosion();
+                return;
+            }
+            background.sprite = backgroundTurnedOn;
             mask.sprite = gameManager.maskDoorOn;
 
             if (isOpen) radiations.Play();
@@ -102,9 +131,12 @@ public class MicroWave : MonoBehaviour {
     }
 
     void Explosion() {
+        bombTimer = timer;
         StopCooking();
         exploded = true;
-        timerDisplay.text = "";
+        timeSinceExplosion = 0;
+        timerDisplay.text = "KO";
+        smokeClouds.Play();
     }
 
     void OnTriggerEnter2D(Collider2D col) {
@@ -122,8 +154,9 @@ public class MicroWave : MonoBehaviour {
         Plat plat = col.GetComponent<Plat>();
         if (plat && !plat.isHeld && plat.microWaveThatContainsMe == this && isOpen && !cookingMeal) {
 
-            if (plat.hasMetallicObject) Explosion();
-            else cookingMeal = plat;
+            if (plat.hasMetallicObject && isCooking) {
+                Explosion();
+            } else cookingMeal = plat;
         } else if (col.GetComponent<OutOfOrderPostIt>() && !Mouse.holding) {
             outOfOrder = true;
             col.transform.parent = transform;

@@ -46,6 +46,10 @@ public class StarGate : BouffeDestroyer {
             zapPS.Play();
             lightningPS.Play();
             DestroyBouffe(col);
+        } else if (col.GetComponent<MetallicObject>() && !Mouse.holding) {
+            zapPS.Play();
+            lightningPS.Play();
+            Destroy(col.gameObject);
         }
     }
 

@@ -15,7 +15,7 @@ public class Plat : MonoBehaviour {
     
     public int valeurDuBol;
     public bool inStarGate;
-    public bool hasMetallicObject;
+    public bool hasMetallicObject, keepCold;
 
     public CookingState cookingState;
     public enum CookingState {
@@ -56,6 +56,9 @@ public class Plat : MonoBehaviour {
         myCollider = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         bouffe = transform.Find("Bouffe").GetComponent<SpriteRenderer>();
+
+        if (keepCold) timeToCook = 0;
+        cookingState = keepCold ? CookingState.good : CookingState.none;
         GenererBol();
     }
 
@@ -70,7 +73,7 @@ public class Plat : MonoBehaviour {
         transform.rotation = Quaternion.identity;
         transform.localScale = Vector2.one;
         myCollider.isTrigger = false;
-        cookingState = CookingState.none;
+        cookingState = keepCold ? CookingState.good : CookingState.none;
         bouffe.sharedMaterial = gameManager.matDefault;
     }
 
@@ -144,7 +147,7 @@ public class Plat : MonoBehaviour {
         if (cookingState == CookingState.good && isAccessible) {
 
             if (!shine.isPlaying) shine.Play();
-            smoke.SetActive(true);
+            if (!keepCold) smoke.SetActive(true);
         } else {
             if (shine.isPlaying) shine.Stop();
             smoke.SetActive(false);
@@ -196,6 +199,11 @@ public class Plat : MonoBehaviour {
 
             rb.bodyType = RigidbodyType2D.Static;
             transform.localPosition = Vector2.zero;
+
+            if (hasMetallicObject) {
+                Transform key = transform.Find("Key") ?? GetComponentInChildren<MetallicObject>().transform;
+                key.transform.localPosition = Vector3.back;
+            }
         }
     }
 
