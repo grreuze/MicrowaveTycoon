@@ -38,7 +38,10 @@ public class StarGate : BouffeDestroyer {
             lightningPS.Play();
             DestroyBouffe(col);
 
-            // Mettre des effets de particules de téléportation cool
+        } else if (col.GetComponent<OutOfOrderPostIt>() && !Mouse.holding) {
+            zapPS.Play();
+            lightningPS.Play();
+            Destroy(col.gameObject);
         }
     }
 

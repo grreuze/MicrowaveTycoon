@@ -14,7 +14,6 @@ public class Plat : MonoBehaviour {
     public MicroWave microWaveThatContainsMe;
     
     public int valeurDuBol;
-    public static Plat currentlyHolding;
     public bool inStarGate;
     public bool hasMetallicObject;
 
@@ -88,11 +87,11 @@ public class Plat : MonoBehaviour {
     void OnMouseOver() {
         if (!isAccessible) return;
         bool canDrag = !isHeld;
-        if (!currentlyHolding) {
+        if (!Mouse.holding) {
             isHeld = Input.GetMouseButton(0);
-            if (!isHeld) currentlyHolding = null;
+            if (!isHeld) Mouse.holding = null;
         }
-        if (isHeld && canDrag && !currentlyHolding)
+        if (isHeld && canDrag && !Mouse.holding)
             StartHolding();
     }
     
@@ -114,7 +113,7 @@ public class Plat : MonoBehaviour {
         if (microWaveThatContainsMe && microWaveThatContainsMe.timer > 0) {
 
             // Add cooking time
-            realTimer += Time.deltaTime * gameManager.timeModifier;
+            realTimer += Time.deltaTime * gameManager.timeModifier * microWaveThatContainsMe.radiationPower;
             timeCooked = (int)Mathf.Round(realTimer);
 
             if (timeCooked > timeToCook) { // Overcooked
@@ -165,12 +164,13 @@ public class Plat : MonoBehaviour {
         myCollider.isTrigger = false;
         transform.parent = null;
         rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.gravityScale = 0;
         transform.localScale = Vector2.one;
         if (microWaveThatContainsMe) {
             microWaveThatContainsMe.cookingMeal = null;
             microWaveThatContainsMe = null;
         }
-        currentlyHolding = this;
+        Mouse.holding = gameObject;
     }
 
     void Drag() {
@@ -180,7 +180,8 @@ public class Plat : MonoBehaviour {
 
     void Drop() {
         isHeld = false;
-        currentlyHolding = null;
+        Mouse.holding = null;
+        rb.gravityScale = 1;
         if (microWaveThatContainsMe) {
             myCollider.isTrigger = true;
 

@@ -2,16 +2,18 @@
 public class OutOfOrderPostIt : DraggableObject {
 
     MicroWave parent;
-
-    void Start() {
-        parent = GetComponentInParent<MicroWave>();
-        parent.outOfOrder = true;
-    }
-
+    Avatar avatar;
+    
     public override void MoveToMousePosition() {
         base.MoveToMousePosition();
+
+        parent = GetComponentInParent<MicroWave>();
+        if (parent) parent.outOfOrder = false;
+
+        avatar = GetComponentInParent<Avatar>();
+        if (avatar) avatar.arm.block = false;
+
         transform.parent = null;
-        parent.outOfOrder = false;
     }
 
 }

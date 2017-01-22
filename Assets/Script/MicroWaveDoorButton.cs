@@ -14,10 +14,22 @@ public class MicroWaveDoorButton : MonoBehaviour {
         mask.enabled = microWave.closedDoor.enabled = !microWave.isOpen;
         
         radiations = transform.parent.Find("Radiations").GetComponent<ParticleSystem>();
+
+        if (microWave.type == MicrowaveType.Doorless) {
+
+            microWave.isOpen = true;
+
+            microWave.closedDoor.gameObject.SetActive(true);
+            mask.enabled = microWave.closedDoor.enabled = false;
+
+            microWave.openDoor.gameObject.SetActive(false);
+            gameObject.SetActive(false);
+        }
+
     }
 
     void OnMouseOver() {
-        if (microWave.locked) return;
+        if (microWave.locked || microWave.exploded || microWave.outOfOrder) return;
 
         if (Input.GetMouseButtonDown(0)) {
             microWave.isOpen ^= true;

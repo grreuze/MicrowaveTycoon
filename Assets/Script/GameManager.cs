@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour {
 	}
 
     void Update() {
-        satisfaction -= Time.deltaTime;
+        satisfaction -= Time.deltaTime * 1/3;
         satisfactionSlider.value = satisfaction;
     }
 

@@ -12,6 +12,7 @@ public class DraggableObject : MonoBehaviour {
 		if (isHeld) MoveToMousePosition();
         if (!Input.GetMouseButton(0)) {
             isHeld = false;
+            Mouse.holding = null;
         }
     }
 
@@ -21,6 +22,9 @@ public class DraggableObject : MonoBehaviour {
     }
     
     void OnMouseOver() {
-        isHeld = Input.GetMouseButton(0);
+        if (!Mouse.holding) {
+            isHeld = Input.GetMouseButton(0);
+            if (isHeld) Mouse.holding = gameObject;
+        }
     }
 }

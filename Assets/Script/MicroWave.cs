@@ -8,7 +8,7 @@ public class MicroWave : MonoBehaviour {
 
     public bool isOpen, isCooking;
     public int timer;
-    float radiationPower = 1;
+    public float radiationPower = 1;
 
     public SpriteRenderer openDoor, closedDoor;
     public Plat cookingMeal;
@@ -33,7 +33,17 @@ public class MicroWave : MonoBehaviour {
         gameManager = GameManager.instance;
         radiations = transform.Find("Radiations").GetComponent<ParticleSystem>();
 
+        if (type == MicrowaveType.Nuclear) radiationPower = 3;
+
         locked = type == MicrowaveType.Locked;
+
+        if (type == MicrowaveType.Bomb) {
+            cookingLED.gameObject.SetActive(false);
+            timer = 599;
+            realTimer = timer;
+            isCooking = true;
+            mask.sprite = gameManager.maskDoorOn;
+        }
     }
 
     public void StopCooking() {
@@ -48,7 +58,7 @@ public class MicroWave : MonoBehaviour {
 
     void Update() {
         if (isCooking) {
-            realTimer -= Time.deltaTime * gameManager.timeModifier;
+            realTimer -= Time.deltaTime * gameManager.timeModifier * radiationPower;
             timer = (int)Mathf.Round(realTimer);
             SetTimerDisplay();
 
@@ -72,11 +82,11 @@ public class MicroWave : MonoBehaviour {
     
     float lastTimeScrolled;
     void OnMouseOver() {
-        if (locked || exploded || outOfOrder) return;
+        if (locked || exploded || outOfOrder || type == MicrowaveType.Bomb) return;
 
         int mouseWheel = (int)(Input.GetAxisRaw("Mouse ScrollWheel")*10);
 
-        if (mouseWheel != 0) {
+        if (mouseWheel != 0 && timer < 594) {
             timer += mouseWheel * 5;
             timer = Mathf.Max(0, timer);
             realTimer = timer;
@@ -95,7 +105,7 @@ public class MicroWave : MonoBehaviour {
         if (locked || exploded || outOfOrder) return;
 
         Plat plat = col.GetComponent<Plat>();
-        if (plat && plat.isHeld && isOpen && !cookingMeal) {
+        if (plat && plat.isHeld && isOpen && !cookingMeal && plat.microWaveThatContainsMe != this) {
             plat.microWaveThatContainsMe = this;
         }
     }
@@ -108,6 +118,9 @@ public class MicroWave : MonoBehaviour {
 
             if (plat.hasMetallicObject) Explosion();
             else cookingMeal = plat;
+        } else if (col.GetComponent<OutOfOrderPostIt>() && !Mouse.holding) {
+            outOfOrder = true;
+            col.transform.parent = transform;
         }
     }
 
@@ -115,7 +128,7 @@ public class MicroWave : MonoBehaviour {
         if (locked || exploded || outOfOrder) return;
 
         Plat plat = col.GetComponent<Plat>();
-        if (plat && plat.isHeld && isOpen && !cookingMeal) {
+        if (plat && plat.isHeld && isOpen && !cookingMeal && plat.microWaveThatContainsMe == this) {
             plat.microWaveThatContainsMe = null;
         }
     }
