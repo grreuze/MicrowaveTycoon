@@ -35,6 +35,6 @@ public class Tuto : MonoBehaviour {
 
     public void ButtonPlay()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2);
     }
 }
