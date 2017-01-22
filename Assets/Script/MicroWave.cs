@@ -32,7 +32,6 @@ public class MicroWave : MonoBehaviour {
     void Awake() {
         audioSource = GetComponent<AudioSource>();
         cuissonLoop = transform.parent.GetComponent<AudioSource>();
-        print(cuissonLoop);
 
         timerDisplay = GetComponentInChildren<TextMesh>();
         cookingLED = transform.Find("CookingLED").GetComponent<SpriteRenderer>();
